@@ -5,6 +5,7 @@
 #include "SleepingCarriage.h"
 #include "OpenFreightCarriage.h"
 #include "CoveredFreightCarriage.h"
+#include "Station.h"
 
 int main()
 {
@@ -32,5 +33,22 @@ int main()
     CoveredFreightCarriage coveredFreight{4, 97};
     std::cout << "CoveredFreightCarriage id=" << coveredFreight.getId() << "\n";
 
+    Station station("Grand Central Station");
+    std::cout << "Station name: " << station.getStationName() << "\n";
+    auto locomotive = std::make_unique<ElectricLocomotive>(5, 167, 4538);
+    station.addLocomotive(std::move(locomotive));
+    Locomotive *foundLocomotive = station.getLocomotiveById(5);
+    if (foundLocomotive)
+    {
+        std::cout << "Found locomotive id= " << foundLocomotive->getId()
+                  << " maxSpeed= " << foundLocomotive->getMaxSpeed() << "\n";
+    }
+    auto carriage = std::make_unique<SeatCarriage>(3, 125, 1);
+    station.addCarriage(std::move(carriage));
+    Carriage *foundCarriage = station.getCarriageById(3);
+    if (foundCarriage)
+    {
+        std::cout << "Found carriage id= " << foundCarriage->getId() << "\n";
+    }
     return 0;
 }
