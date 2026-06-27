@@ -1,5 +1,7 @@
 // SleepingCarriage.h
-#pragma once
+#ifndef SLEEPINGCARRIAGE_H
+#define SLEEPINGCARRIAGE_H
+
 #include "Carriage.h"
 #include "CarriageType.h"
 
@@ -13,3 +15,5 @@ public:
     CarriageType getType() override { return CarriageType::Sleeping; }
     int getBeds() { return beds_; }
 };
+
+#endif

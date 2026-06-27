@@ -1,5 +1,7 @@
 // CoveredFreightCarriage.h
-#pragma once
+#ifndef COVEREDFREIGHTCARRIAGE_H
+#define COVEREDFREIGHTCARRIAGE_H
+
 #include "Carriage.h"
 #include "CarriageType.h"
 
@@ -13,3 +15,5 @@ public:
     CarriageType getType() override { return CarriageType::CoveredFreight; }
     int getVolumeCubicMeters() { return volumeCubicMeters_; }
 };
+
+#endif

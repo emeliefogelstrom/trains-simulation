@@ -1,5 +1,7 @@
 // SeatCarriage.h
-#pragma once
+#ifndef SEATCARRIAGE_H
+#define SEATCARRIAGE_H
+
 #include "Carriage.h"
 #include "CarriageType.h"
 
@@ -15,3 +17,5 @@ public:
     int getSeats() { return seats_; }
     bool getHasInternet() { return hasInternet_; }
 };
+
+#endif

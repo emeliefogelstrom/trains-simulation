@@ -1,5 +1,7 @@
 // Station.h
-#pragma once
+#ifndef STATION_H
+#define STATION_H
+
 #include <vector>
 #include <memory>
 #include <string>
@@ -24,3 +26,5 @@ public:
     Carriage *getCarriageById(int id);
     std::string getStationName();
 };
+
+#endif

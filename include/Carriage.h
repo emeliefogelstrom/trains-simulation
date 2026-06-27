@@ -1,5 +1,6 @@
 // Carriage.h
-#pragma once
+#ifndef CARRIAGE_H
+#define CARRIAGE_H
 #include "CarriageType.h"
 
 class Carriage
@@ -13,3 +14,5 @@ public:
     virtual CarriageType getType() = 0;
     int getId() const { return id_; }
 };
+
+#endif

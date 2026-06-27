@@ -1,5 +1,6 @@
 // DieselLocomotive.h
-#pragma once
+#ifndef DIESELLOCOMOTIVE_H
+#define DIESELLOCOMOTIVE_H
 
 #include "Locomotive.h"
 #include "LocomotiveType.h"
@@ -15,3 +16,5 @@ public:
     LocomotiveType getType() override { return LocomotiveType::Diesel; }
     int getConsumption() override { return consumption_; }
 };
+
+#endif

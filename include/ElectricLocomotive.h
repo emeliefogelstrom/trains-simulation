@@ -1,5 +1,7 @@
 // ElectricLocomotive.h
-#pragma once
+#ifndef ELECTRICLOCOMOTIVE_H
+#define ELECTRICLOCOMOTIVE_H
+
 #include "Locomotive.h"
 #include "LocomotiveType.h"
 
@@ -13,3 +15,5 @@ public:
     LocomotiveType getType() override { return LocomotiveType::Electric; }
     int getConsumption() override { return consumption_; }
 };
+
+#endif

@@ -1,5 +1,7 @@
 // Track.h
-#pragma once
+#ifndef TRACK_H
+#define TRACK_H
+
 #include <string>
 
 class Track
@@ -15,3 +17,5 @@ public:
     const std::string &getStationTo() const { return stationTo_; }
     int getDistance() const { return distance_; }
 };
+
+#endif

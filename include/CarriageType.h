@@ -1,5 +1,6 @@
 // CarriageType.h — enumet, egen fil
-#pragma once
+#ifndef CARRIAGETYPE_H
+#define CARRIAGETYPE_H
 
 enum class CarriageType
 {
@@ -8,3 +9,5 @@ enum class CarriageType
     OpenFreight,
     CoveredFreight
 };
+
+#endif

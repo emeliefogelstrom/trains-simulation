@@ -1,6 +1,7 @@
 // VehicleEscrow.h
-#ifndef VEHICLEESCROW
-#define VEHICLEESCROW
+#ifndef VEHICLEESCROW_H
+#define VEHICLEESCROW_H
+
 #include <memory>
 #include <variant>
 #include <vector>

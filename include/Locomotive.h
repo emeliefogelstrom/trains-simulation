@@ -1,5 +1,7 @@
 // Locomotive.h
-#pragma once
+#ifndef LOCOMOTIVE_H
+#define LOCOMOTIVE_H
+
 #include "LocomotiveType.h"
 
 class Locomotive
@@ -15,3 +17,5 @@ public:
     int getId() const { return id_; }
     int getMaxSpeed() const { return maxSpeed_; }
 };
+
+#endif

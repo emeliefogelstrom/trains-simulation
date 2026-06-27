@@ -1,5 +1,7 @@
 // OpenFreightCarriage.h
-#pragma once
+#ifndef OPENFREIGHTCARRIAGE_H
+#define OPENFREIGHTCARRIAGE_H
+
 #include "Carriage.h"
 #include "CarriageType.h"
 
@@ -14,3 +16,5 @@ public:
     int getLoadCapacityTon() { return loadCapacityTon_; }
     int getLoadAreaSquareMeters() { return loadAreaSquareMeters_; }
 };
+
+#endif
