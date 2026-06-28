@@ -1,0 +1,59 @@
+// Train.h
+#ifndef TRAIN_H
+#define TRAIN_H
+#include "Station.h"
+#include "VehicleEscrow.h"
+
+enum class TrainStatus
+{
+    NOT_ASSEMBLED,
+    INCOMPLETE,
+    ASSEMBLED,
+    READY,
+    RUNNING,
+    ARRIVED,
+    FINISHED
+};
+
+class Train
+{
+private:
+    TrainStatus status_;
+    std::vector<Vehicle> vehicleSequence_;
+    std::vector<int> requiredVehicleTypes_;
+
+    int trainNumber_;
+    std::string departureStation_;
+    std::string arrivalStation_;
+
+    int scheduledDepartureTime_;
+    int scheduledArrivalTime_;
+    int maxSpeed_;
+
+public:
+    Train(int trainNumber, const std::string &departureStation,
+          const std::string &arrivalStation, int scheduledDepartureTime,
+          int scheduledArrivalTime, int maxSpeed,
+          const std::vector<int> &requiredVehicleTypes);
+    bool tryAssemble(Station &departure, VehicleEscrow &box);
+    void markReady();
+    void depart();
+    void arrive();
+    void finish(Station &arrival, VehicleEscrow &box);
+
+    int getTrainNumber() const;
+    std::string getDepartureStation() const;
+    std::string getArrivalStation() const;
+
+    TrainStatus getStatus() const;
+    const std::vector<Vehicle> &getVehicleSequence() const;
+    const std::vector<int> &getRequiredVehicleTypes() const;
+
+    int getMaxSpeed() const;
+    int getScheduledDepartureTime() const;
+    int getScheduledArrivalTime() const;
+    double getAverageSpeed() const;
+    int getDelay() const;
+};
+
+#endif
