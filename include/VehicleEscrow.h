@@ -21,7 +21,7 @@ private:
     std::vector<Vehicle> store_;
 
 public:
-    void setStorage(Vehicle store)
+    void add(Vehicle store)
     {
         store_.push_back(std::move(store));
     }
@@ -41,6 +41,11 @@ public:
         Vehicle result = std::move(*it);
         store_.erase(it);
         return result;
+    }
+
+    std::size_t getStorageSize() const
+    {
+        return store_.size();
     }
 };
 
