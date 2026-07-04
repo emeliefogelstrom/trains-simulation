@@ -15,11 +15,13 @@ enum class TrainStatus
     FINISHED
 };
 
+using VehiclePtr = std::variant<const Locomotive *, const Carriage *>;
+
 class Train
 {
 private:
     TrainStatus status_;
-    std::vector<Vehicle> vehicleSequence_;
+    std::vector<VehiclePtr> vehicleSequence_;
     std::vector<int> requiredVehicleTypes_;
 
     int trainNumber_;
@@ -46,7 +48,7 @@ public:
     std::string getArrivalStation() const;
 
     TrainStatus getStatus() const;
-    const std::vector<Vehicle> &getVehicleSequence() const;
+    const std::vector<VehiclePtr> &getVehicleSequence() const;
     const std::vector<int> &getRequiredVehicleTypes() const;
 
     int getMaxSpeed() const;
