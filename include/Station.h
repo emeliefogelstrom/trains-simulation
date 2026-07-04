@@ -22,8 +22,12 @@ public:
     void addCarriage(std::unique_ptr<Carriage> carriage);
     const std::vector<std::unique_ptr<Locomotive>> &getLocomotives() const;
     Locomotive *getLocomotiveById(int id);
+    std::unique_ptr<Locomotive> extractLocomotiveById(int id);
+
     const std::vector<std::unique_ptr<Carriage>> &getCarriages() const;
     Carriage *getCarriageById(int id);
+    std::unique_ptr<Carriage> extractCarriageById(int id);
+
     std::string getStationName();
 };
 

@@ -32,6 +32,21 @@ Locomotive *Station::getLocomotiveById(int id)
     return it->get();
 }
 
+std::unique_ptr<Locomotive> Station::extractLocomotiveById(int id)
+{
+    auto it = std::ranges::find_if(locomotives_, [id](const auto &locomotive)
+                                   { return locomotive->getId() == id; });
+
+    if (it == locomotives_.end())
+    {
+        return nullptr;
+    }
+
+    auto result = std::move(*it);
+    locomotives_.erase(it);
+    return result;
+}
+
 const std::vector<std::unique_ptr<Carriage>> &Station::getCarriages() const { return carriages_; }
 
 Carriage *Station::getCarriageById(int id)
@@ -45,4 +60,22 @@ Carriage *Station::getCarriageById(int id)
     return it->get();
 }
 
-std::string Station::getStationName() { return stationName_; }
+std::unique_ptr<Carriage> Station::extractCarriageById(int id)
+{
+    auto it = std::ranges::find_if(carriages_, [id](const auto &carriage)
+                                   { return carriage->getId() == id; });
+
+    if (it == carriages_.end())
+    {
+        return nullptr;
+    }
+
+    auto result = std::move(*it);
+    carriages_.erase(it);
+    return result;
+}
+
+std::string Station::getStationName()
+{
+    return stationName_;
+}
