@@ -6,7 +6,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 include_directories(include)
 
-add_executable(trains src/main.cpp src/Station.cpp)
+add_executable(trains src/main.cpp src/Station.cpp src/Train.cpp)
 
 # --- Tests ---
 include(FetchContent)
