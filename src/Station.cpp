@@ -1,10 +1,11 @@
 #include <vector>
 #include <memory>
-#include <string>
 #include <algorithm>
+#include <optional>
 #include "../include/Locomotive.h"
 #include "../include/Carriage.h"
 #include "../include/Station.h"
+#include "../include/LocomotiveType.h"
 
 Station::Station(std::string name) : stationName_(name) {}
 
@@ -20,7 +21,7 @@ void Station::addCarriage(std::unique_ptr<Carriage> carriage)
 
 const std::vector<std::unique_ptr<Locomotive>> &Station::getLocomotives() const { return locomotives_; }
 
-Locomotive *Station::getLocomotiveById(int id)
+Locomotive *Station::getLocomotiveById(int id) const
 {
     auto it = std::ranges::find(locomotives_, id, &Locomotive::getId);
 
@@ -30,6 +31,25 @@ Locomotive *Station::getLocomotiveById(int id)
     }
 
     return it->get();
+}
+
+std::optional<int> Station::getLowestIdByLocomotiveType(LocomotiveType type, const std::vector<int> &claimedIds) const
+{
+    std::optional<int> lowest_id;
+
+    for (const auto &loco : locomotives_)
+    {
+        if (loco->getType() != type)
+            continue;
+
+        if (std::ranges::contains(claimedIds, loco->getId()))
+            continue;
+
+        if (!lowest_id || loco->getId() < *lowest_id)
+            lowest_id = loco->getId();
+    }
+
+    return lowest_id;
 }
 
 std::unique_ptr<Locomotive> Station::extractLocomotiveById(int id)
@@ -49,7 +69,7 @@ std::unique_ptr<Locomotive> Station::extractLocomotiveById(int id)
 
 const std::vector<std::unique_ptr<Carriage>> &Station::getCarriages() const { return carriages_; }
 
-Carriage *Station::getCarriageById(int id)
+Carriage *Station::getCarriageById(int id) const
 {
     auto it = std::ranges::find(carriages_, id, &Carriage::getId);
 
@@ -58,6 +78,25 @@ Carriage *Station::getCarriageById(int id)
         return nullptr;
     }
     return it->get();
+}
+
+std::optional<int> Station::getLowestIdByCarriageType(CarriageType type, const std::vector<int> &claimedIds) const
+{
+    std::optional<int> lowest_id;
+
+    for (const auto &car : carriages_)
+    {
+        if (car->getType() != type)
+            continue;
+
+        if (std::ranges::contains(claimedIds, car->getId()))
+            continue;
+
+        if (!lowest_id || car->getId() < *lowest_id)
+            lowest_id = car->getId();
+    }
+
+    return lowest_id;
 }
 
 std::unique_ptr<Carriage> Station::extractCarriageById(int id)
@@ -75,7 +114,7 @@ std::unique_ptr<Carriage> Station::extractCarriageById(int id)
     return result;
 }
 
-std::string Station::getStationName()
+std::string Station::getStationName() const
 {
     return stationName_;
 }
