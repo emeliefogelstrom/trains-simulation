@@ -1,6 +1,9 @@
 #include "../include/Train.h"
 #include "../include/Station.h"
 #include "../include/VehicleEscrow.h"
+#include "../include/VehicleTypeUtils.h"
+#include <iostream>
+#include <map>
 
 Train::Train(int trainNumber, const std::string &departureStation,
              const std::string &arrivalStation, int scheduledDepartureTime,
@@ -10,21 +13,86 @@ Train::Train(int trainNumber, const std::string &departureStation,
                                                              scheduledArrivalTime_(scheduledArrivalTime), maxSpeed_(maxSpeed),
                                                              requiredVehicleTypes_(requiredVehicleTypes), status_(TrainStatus::NOT_ASSEMBLED) {}
 
-// Fixa
 bool Train::tryAssemble(Station &departure, VehicleEscrow &box)
 {
+    enum class Kind
+    {
+        Loco,
+        Car
+    };
+
+    std::vector<std::pair<Kind, int>> vehiclesToExtract;
+    std::vector<int> claimedIds;
+
+    for (auto &type : requiredVehicleTypes_)
+    {
+        if (VehicleTypeUtils::isLocomotive(type))
+        {
+            auto locoType = VehicleTypeUtils::convertLocomotiveType(type);
+            auto locoId = departure.getLowestIdByLocomotiveType(locoType, claimedIds);
+            if (!locoId)
+            {
+                status_ = TrainStatus::INCOMPLETE;
+                return false;
+            }
+            vehiclesToExtract.emplace_back(Kind::Loco, *locoId);
+            claimedIds.push_back(*locoId);
+        }
+        else
+        {
+            auto carType = VehicleTypeUtils::convertCarriageType(type);
+            auto carId = departure.getLowestIdByCarriageType(carType, claimedIds);
+            if (!carId)
+            {
+                status_ = TrainStatus::INCOMPLETE;
+                return false;
+            }
+            vehiclesToExtract.emplace_back(Kind::Car, *carId);
+            claimedIds.push_back(*carId);
+        }
+    }
+
+    for (const auto &vehicle : vehiclesToExtract)
+    {
+        if (vehicle.first == Kind::Loco)
+        {
+            auto extractLoc = departure.extractLocomotiveById(vehicle.second);
+            box.add(std::move(extractLoc));
+        }
+        else
+        {
+            auto extractCar = departure.extractCarriageById(vehicle.second);
+            box.add(std::move(extractCar));
+        }
+    }
+
     status_ = TrainStatus::ASSEMBLED;
     return true;
 }
+
 void Train::markReady() { status_ = TrainStatus::READY; }
 
 void Train::depart() { status_ = TrainStatus::RUNNING; }
 
 void Train::arrive() { status_ = TrainStatus::ARRIVED; }
 
-// Fixa
 void Train::finish(Station &arrival, VehicleEscrow &box)
 {
+    for (const auto &vehicle : vehicleSequence_)
+    {
+        if (auto loco = std::get_if<const Locomotive *>(&vehicle))
+        {
+            auto extracted = box.extract((*loco)->getId());
+            arrival.addLocomotive(
+                std::move(std::get<std::unique_ptr<Locomotive>>(extracted)));
+        }
+        else if (auto car = std::get_if<const Carriage *>(&vehicle))
+        {
+
+            auto extracted = box.extract((*car)->getId());
+            arrival.addCarriage(std::move(std::get<std::unique_ptr<Carriage>>(extracted)));
+        }
+    }
     status_ = TrainStatus::FINISHED;
 }
 
