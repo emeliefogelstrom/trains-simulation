@@ -57,11 +57,13 @@ bool Train::tryAssemble(Station &departure, VehicleEscrow &box)
         if (vehicle.first == Kind::Loco)
         {
             auto extractLoc = departure.extractLocomotiveById(vehicle.second);
+            vehicleSequence_.push_back(extractLoc.get());
             box.add(std::move(extractLoc));
         }
         else
         {
             auto extractCar = departure.extractCarriageById(vehicle.second);
+            vehicleSequence_.push_back(extractCar.get());
             box.add(std::move(extractCar));
         }
     }
