@@ -23,6 +23,8 @@ add_executable(trains_tests
   tests/track_test.cpp
   tests/vehicleEscrow_test.cpp
   tests/train_test.cpp
+  tests/vehicleTypeUtils_test.cpp
+  tests/station_test.cpp
   src/Station.cpp
   src/Train.cpp
 )
