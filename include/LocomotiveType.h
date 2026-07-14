@@ -1,6 +1,6 @@
 // LocomotiveType.h
-#ifndef LOCOMOTIVETYPES_H
-#define LOCOMOTIVETYPES_H
+#ifndef LOCOMOTIVE_TYPE_H
+#define LOCOMOTIVE_TYPE_H
 
 enum class LocomotiveType
 {

@@ -1,6 +1,6 @@
 // CarriageType.h — enumet, egen fil
-#ifndef CARRIAGETYPE_H
-#define CARRIAGETYPE_H
+#ifndef CARRIAGE_TYPE_H
+#define CARRIAGE_TYPE_H
 
 enum class CarriageType
 {
