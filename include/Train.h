@@ -31,11 +31,12 @@ private:
     int scheduledDepartureTime_;
     int scheduledArrivalTime_;
     int maxSpeed_;
+    int distance_;
 
 public:
     Train(int trainNumber, const std::string &departureStation,
           const std::string &arrivalStation, int scheduledDepartureTime,
-          int scheduledArrivalTime, int maxSpeed,
+          int scheduledArrivalTime, int maxSpeed, int distance,
           const std::vector<int> &requiredVehicleTypes);
     bool tryAssemble(Station &departure, VehicleEscrow &box);
     void markReady();
