@@ -7,12 +7,12 @@
 
 namespace VehicleTypeUtils
 {
-    bool isLocomotive(int type)
+    inline bool isLocomotive(int type)
     {
         return type == 4 || type == 5;
     }
 
-    CarriageType convertCarriageType(int typeNumber)
+    inline CarriageType convertCarriageType(int typeNumber)
     {
         switch (typeNumber)
         {
@@ -29,7 +29,7 @@ namespace VehicleTypeUtils
         }
     }
 
-    LocomotiveType convertLocomotiveType(int typeNumber)
+    inline LocomotiveType convertLocomotiveType(int typeNumber)
     {
 
         switch (typeNumber)
