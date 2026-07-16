@@ -15,7 +15,7 @@ TEST(TrainTest, AssemblesTrainAndStatusIsAssembled)
     departure.addCarriage(std::make_unique<CoveredFreightCarriage>(4, 50));
 
     VehicleEscrow box;
-    Train train(123, "Grand Central", "St. Pancras", 765, 965, 145, {5, 3, 3, 3});
+    Train train(123, "Grand Central", "St. Pancras", 765, 965, 145, 165, {5, 3, 3, 3});
 
     EXPECT_TRUE(train.tryAssemble(departure, box));
     EXPECT_EQ(train.getStatus(), TrainStatus::ASSEMBLED);
@@ -33,7 +33,7 @@ TEST(TrainTest, AssemblesTrainWithMissingCarriageStatusIsIncomplete)
     departure.addCarriage(std::make_unique<CoveredFreightCarriage>(4, 50));
 
     VehicleEscrow box;
-    Train train(123, "Grand Central", "St. Pancras", 765, 965, 145, {5, 0, 1});
+    Train train(123, "Grand Central", "St. Pancras", 765, 965, 145, 165, {5, 0, 1});
 
     EXPECT_FALSE(train.tryAssemble(departure, box));
     EXPECT_EQ(train.getStatus(), TrainStatus::INCOMPLETE);
@@ -51,7 +51,7 @@ TEST(TrainTest, AssemblesTrainWithOnlyOneElectricLocomotiveAvailableStatusIsInco
     departure.addCarriage(std::make_unique<CoveredFreightCarriage>(4, 50));
 
     VehicleEscrow box;
-    Train train(123, "Grand Central", "St. Pancras", 765, 965, 145, {4, 0, 3, 3, 4});
+    Train train(123, "Grand Central", "St. Pancras", 765, 965, 145, 165, {4, 0, 3, 3, 4});
 
     EXPECT_FALSE(train.tryAssemble(departure, box));
     EXPECT_EQ(train.getStatus(), TrainStatus::INCOMPLETE);
@@ -70,7 +70,7 @@ TEST(TrainTest, DisassembleTrainAndMoveVehiclesToArrivalStation)
     departure.addLocomotive(std::make_unique<ElectricLocomotive>(5, 123, 1462));
 
     VehicleEscrow box;
-    Train train(123, "Grand Central", "St. Pancras", 765, 965, 145, {4, 0, 3, 3, 4});
+    Train train(123, "Grand Central", "St. Pancras", 765, 965, 145, 165, {4, 0, 3, 3, 4});
     train.tryAssemble(departure, box);
 
     Station arrival("St. Pancras");
