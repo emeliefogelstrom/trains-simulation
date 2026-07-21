@@ -11,7 +11,7 @@ Train::Train(int trainNumber, const std::string &departureStation,
              const std::vector<int> &requiredVehicleTypes) : trainNumber_(trainNumber), departureStation_(departureStation),
                                                              arrivalStation_(arrivalStation), scheduledDepartureTime_(scheduledDepartureTime),
                                                              scheduledArrivalTime_(scheduledArrivalTime), maxSpeed_(maxSpeed), distance_(distance),
-                                                             requiredVehicleTypes_(requiredVehicleTypes), status_(TrainStatus::NOT_ASSEMBLED) {}
+                                                             requiredVehicleTypes_(requiredVehicleTypes), status_(TrainStatus::NOT_ASSEMBLED), delay_(0) {}
 
 bool Train::tryAssemble(Station &departure, VehicleEscrow &box)
 {
@@ -72,7 +72,7 @@ bool Train::tryAssemble(Station &departure, VehicleEscrow &box)
     return true;
 }
 
-void Train::markReady() { status_ = TrainStatus::READY; }
+void Train::ready() { status_ = TrainStatus::READY; }
 
 void Train::depart() { status_ = TrainStatus::RUNNING; }
 
@@ -102,6 +102,10 @@ int Train::getTrainNumber() const { return trainNumber_; }
 
 int Train::getMaxSpeed() const { return maxSpeed_; }
 
+int Train::getScheduledDepartureTime() const { return scheduledDepartureTime_; }
+
+int Train::getScheduledArrivalTime() const { return scheduledArrivalTime_; }
+
 std::string Train::getDepartureStation() const { return departureStation_; }
 
 std::string Train::getArrivalStation() const { return arrivalStation_; }
@@ -116,3 +120,7 @@ double Train::getAverageSpeed() const
     double hours = travelTime / 60.0;
     return distance_ / hours;
 }
+
+void Train::addDelay(int delay) { delay_ += delay; }
+
+int Train::getDelay() const { return delay_; }

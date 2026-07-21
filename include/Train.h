@@ -32,6 +32,7 @@ private:
     int scheduledArrivalTime_;
     int maxSpeed_;
     int distance_;
+    int delay_;
 
 public:
     Train(int trainNumber, const std::string &departureStation,
@@ -39,7 +40,7 @@ public:
           int scheduledArrivalTime, int maxSpeed, int distance,
           const std::vector<int> &requiredVehicleTypes);
     bool tryAssemble(Station &departure, VehicleEscrow &box);
-    void markReady();
+    void ready();
     void depart();
     void arrive();
     void finish(Station &arrival, VehicleEscrow &box);
@@ -56,6 +57,7 @@ public:
     int getScheduledDepartureTime() const;
     int getScheduledArrivalTime() const;
     double getAverageSpeed() const;
+    void addDelay(int delay);
     int getDelay() const;
 };
 
