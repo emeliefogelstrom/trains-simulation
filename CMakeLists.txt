@@ -6,7 +6,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 include_directories(include)
 
-add_executable(trains src/main.cpp src/Station.cpp src/Train.cpp src/FileParser.cpp)
+add_executable(trains src/main.cpp src/Station.cpp src/Train.cpp src/FileParser.cpp src/Simulation.cpp)
 
 # --- Tests ---
 include(FetchContent)
@@ -29,6 +29,7 @@ add_executable(trains_tests
   src/Station.cpp
   src/Train.cpp
   src/FileParser.cpp
+  src/Simulation.cpp
 )
 target_include_directories(trains_tests PRIVATE include)
 target_link_libraries(trains_tests GTest::gtest_main)
