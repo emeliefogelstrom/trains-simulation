@@ -7,15 +7,11 @@
 
 class ArriveEvent : public Event
 {
-private:
-    Station &station_;
-    VehicleEscrow &vehicleEscrow_;
-
 public:
-    ArriveEvent(Train *train, int time) : Event(train, time) {}
+    ArriveEvent(Train &train, int time) : Event(train, time) {}
     std::unique_ptr<Event> processEvent() override
     {
-        train_->arrive();
+        train_.arrive();
         return nullptr;
     }
 };

@@ -12,10 +12,10 @@ private:
     VehicleEscrow &vehicleEscrow_;
 
 public:
-    FinishEvent(Train *train, int time, Station &station, VehicleEscrow &vehicleEscrow) : Event(train, time), station_(station), vehicleEscrow_(vehicleEscrow) {}
+    FinishEvent(Train &train, int time, Station &station, VehicleEscrow &vehicleEscrow) : Event(train, time), station_(station), vehicleEscrow_(vehicleEscrow) {}
     std::unique_ptr<Event> processEvent() override
     {
-        train_->finish(station_, vehicleEscrow_);
+        train_.finish(station_, vehicleEscrow_);
         return nullptr;
     }
 };

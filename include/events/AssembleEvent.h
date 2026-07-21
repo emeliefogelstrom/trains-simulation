@@ -12,13 +12,16 @@ private:
     VehicleEscrow &vehicleEscrow_;
 
 public:
-    AssembleEvent(Train *train, int time, Station &station, VehicleEscrow &vehicleEscrow) : Event(train, time), station_(station), vehicleEscrow_(vehicleEscrow) {}
+    AssembleEvent(Train &train, int time, Station &station, VehicleEscrow &vehicleEscrow) : Event(train, time), station_(station), vehicleEscrow_(vehicleEscrow) {}
+
     std::unique_ptr<Event> processEvent() override
     {
-        if (train_->tryAssemble(station_, vehicleEscrow_))
+        if (train_.tryAssemble(station_, vehicleEscrow_))
         {
-            return std::make_unique<ReadyEvent>(train_, train_->getScheduledDepartureTime() - 10);
+            return std::make_unique<ReadyEvent>(train_, train_.getScheduledDepartureTime() - 10);
         }
+
+        train_.addDelay(10);
 
         return std::make_unique<AssembleEvent>(
             train_,

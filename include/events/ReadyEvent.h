@@ -6,11 +6,14 @@
 class ReadyEvent : public Event
 {
 public:
-    ReadyEvent(Train *train, int time) : Event(train, time) {}
+    ReadyEvent(Train &train, int time) : Event(train, time) {}
     std::unique_ptr<Event> processEvent() override
     {
-        train_->markReady();
-        return std::make_unique<DepartEvent>(train_, train_->getScheduledDepartureTime());
+        std::cout
+            << "I ReadyEvent för tåg: " << train_.getTrainNumber() << std::endl;
+
+        train_.ready();
+        return std::make_unique<DepartEvent>(train_, train_.getScheduledDepartureTime() + train_.getDelay());
     }
 };
 

@@ -6,11 +6,12 @@
 class DepartEvent : public Event
 {
 public:
-    DepartEvent(Train *train, int time) : Event(train, time) {}
+    DepartEvent(Train &train, int time) : Event(train, time) {}
     std::unique_ptr<Event> processEvent() override
     {
-        train_->depart();
-        return std::make_unique<ArriveEvent>(train_, train_->getScheduledArrivalTime());
+        std::cout << "I DepartEvent för tåg: " << train_.getTrainNumber() << std::endl;
+        train_.depart();
+        return std::make_unique<ArriveEvent>(train_, train_.getScheduledArrivalTime() + train_.getDelay());
     }
 };
 
