@@ -32,7 +32,7 @@ public:
     std::optional<int> getLowestIdByCarriageType(CarriageType type, const std::vector<int> &claimedIds) const;
     std::unique_ptr<Carriage> extractCarriageById(int id);
 
-    std::string getStationName() const;
+    const std::string &getStationName() const;
 };
 
 #endif

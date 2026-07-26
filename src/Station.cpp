@@ -114,7 +114,7 @@ std::unique_ptr<Carriage> Station::extractCarriageById(int id)
     return result;
 }
 
-std::string Station::getStationName() const
+const std::string &Station::getStationName() const
 {
     return stationName_;
 }
