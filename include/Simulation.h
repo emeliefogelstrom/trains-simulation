@@ -2,37 +2,36 @@
 #ifndef SIMULATION_H
 #define SIMULATION_H
 #include <vector>
-#include <queue>
 #include <memory>
 #include "Station.h"
 #include "Train.h"
 #include "VehicleEscrow.h"
 #include "Track.h"
 #include "./events/Event.h"
+#include "./events/EventQueue.h"
 
-struct EventComparator
+struct SimEvent
 {
-    bool operator()(const std::unique_ptr<Event> &a,
-                    const std::unique_ptr<Event> &b) const
-    {
-        if (a->getTime() != b->getTime())
-            return a->getTime() > b->getTime();
-        return a->getTrainNumber() > b->getTrainNumber();
-    }
+    int time;
+    int trainNumber;
+    std::string departureStation;
+    std::string arrivalStation;
+    int scheduledDepartureTime;
+    int scheduledArrivalTime;
+    int delay;
+    TrainStatus oldStatus;
+    TrainStatus newStatus;
 };
 
 class Simulation
 {
 private:
     VehicleEscrow vehicleEscrow_;
+    EventQueue queue_;
     std::vector<std::unique_ptr<Train>> trains_;
     std::vector<std::unique_ptr<Station>> stations_;
     std::vector<Track> tracks_;
-    std::priority_queue<
-        std::unique_ptr<Event>,
-        std::vector<std::unique_ptr<Event>>,
-        EventComparator>
-        queue_;
+    std::vector<SimEvent> eventLog_;
     int currentTime_;
 
     Station *findStation(const std::string &name);
@@ -40,11 +39,18 @@ private:
     void initializeEvents();
 
 public:
+    Simulation(const Simulation &) = delete;
+    Simulation &operator=(const Simulation &) = delete;
     Simulation(std::vector<std::unique_ptr<Train>> trains,
                std::vector<std::unique_ptr<Station>> stations,
                std::vector<Track> tracks);
 
     void step(int interval);
+    void stepToNextEvent();
+    void processNextEvent();
     void runSimulation();
+    const std::vector<SimEvent> &getEventLog() const;
+    void clearEventLog();
+    int getCurrentTime() const;
 };
 #endif
