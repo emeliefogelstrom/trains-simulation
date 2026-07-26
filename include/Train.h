@@ -46,8 +46,8 @@ public:
     void finish(Station &arrival, VehicleEscrow &box);
 
     int getTrainNumber() const;
-    std::string getDepartureStation() const;
-    std::string getArrivalStation() const;
+    const std::string &getDepartureStation() const;
+    const std::string &getArrivalStation() const;
 
     TrainStatus getStatus() const;
     const std::vector<VehiclePtr> &getVehicleSequence() const;

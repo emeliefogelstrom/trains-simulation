@@ -106,9 +106,9 @@ int Train::getScheduledDepartureTime() const { return scheduledDepartureTime_; }
 
 int Train::getScheduledArrivalTime() const { return scheduledArrivalTime_; }
 
-std::string Train::getDepartureStation() const { return departureStation_; }
+const std::string &Train::getDepartureStation() const { return departureStation_; }
 
-std::string Train::getArrivalStation() const { return arrivalStation_; }
+const std::string &Train::getArrivalStation() const { return arrivalStation_; }
 
 TrainStatus Train::getStatus() const { return status_; }
 const std::vector<VehiclePtr> &Train::getVehicleSequence() const { return vehicleSequence_; }
