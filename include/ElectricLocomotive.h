@@ -12,7 +12,7 @@ private:
 
 public:
     ElectricLocomotive(int id, int maxSpeed, int consumption) : Locomotive(id, maxSpeed), consumption_(consumption) {}
-    LocomotiveType getType() override { return LocomotiveType::Electric; }
+    LocomotiveType getType() const override { return LocomotiveType::Electric; }
     int getConsumption() override { return consumption_; }
 };
 

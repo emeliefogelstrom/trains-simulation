@@ -12,7 +12,7 @@ private:
 
 public:
     SleepingCarriage(int id, int beds) : Carriage(id), beds_(beds) {}
-    CarriageType getType() override { return CarriageType::Sleeping; }
+    CarriageType getType() const override { return CarriageType::Sleeping; }
     int getBeds() { return beds_; }
 };
 

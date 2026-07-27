@@ -13,7 +13,7 @@ private:
 
 public:
     SeatCarriage(int id, int seats, bool hasInternet) : Carriage(id), seats_(seats), hasInternet_(hasInternet) {}
-    CarriageType getType() override { return CarriageType::Seat; }
+    CarriageType getType() const override { return CarriageType::Seat; }
     int getSeats() { return seats_; }
     bool getHasInternet() { return hasInternet_; }
 };

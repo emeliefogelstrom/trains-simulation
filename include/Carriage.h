@@ -11,7 +11,7 @@ protected:
 public:
     Carriage(int id) : id_(id) {}
     virtual ~Carriage() = default;
-    virtual CarriageType getType() = 0;
+    virtual CarriageType getType() const = 0;
     int getId() const { return id_; }
 };
 

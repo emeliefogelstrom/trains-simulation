@@ -12,7 +12,7 @@ private:
 
 public:
     CoveredFreightCarriage(int id, int volumeCubicMeters) : Carriage(id), volumeCubicMeters_(volumeCubicMeters) {}
-    CarriageType getType() override { return CarriageType::CoveredFreight; }
+    CarriageType getType() const override { return CarriageType::CoveredFreight; }
     int getVolumeCubicMeters() { return volumeCubicMeters_; }
 };
 
