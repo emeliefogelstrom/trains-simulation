@@ -48,16 +48,13 @@ void Simulation::initializeEvents()
 
 void Simulation::step(int interval)
 {
-    currentTime_ += interval;
-    runSimulation();
-}
-
-void Simulation::runSimulation()
-{
-    while (!queue_.empty() && queue_.topTime() <= currentTime_)
+    int targetTime = currentTime_ + interval;
+    while (!queue_.empty() && queue_.topTime() <= targetTime)
     {
+        currentTime_ = queue_.topTime();
         processNextEvent();
     }
+    currentTime_ = targetTime;
 }
 
 void Simulation::stepToNextEvent()
@@ -116,4 +113,33 @@ void Simulation::clearEventLog()
 int Simulation::getCurrentTime() const
 {
     return currentTime_;
+}
+
+const std::vector<std::unique_ptr<Train>> &Simulation::getTrains() const
+{
+    return trains_;
+}
+
+const Train *Simulation::getTrainByNumber(int trainNumber) const
+{
+    auto it = std::ranges::find(trains_, trainNumber, &Train::getTrainNumber);
+
+    if (it != trains_.end())
+        return it->get();
+
+    return nullptr;
+}
+
+const Station *Simulation::getStationByName(const std::string &stationName) const
+{
+    auto it = std::ranges::find_if(stations_,
+                                   [&stationName](const auto &s)
+                                   {
+                                       return s->getStationName() == stationName;
+                                   });
+
+    if (it != stations_.end())
+        return it->get();
+
+    return nullptr;
 }

@@ -48,9 +48,11 @@ public:
     void step(int interval);
     void stepToNextEvent();
     void processNextEvent();
-    void runSimulation();
     const std::vector<SimEvent> &getEventLog() const;
     void clearEventLog();
     int getCurrentTime() const;
+    const std::vector<std::unique_ptr<Train>> &getTrains() const;
+    const Train *getTrainByNumber(int trainNumber) const;
+    const Station *getStationByName(const std::string &stationName) const;
 };
 #endif
