@@ -12,8 +12,9 @@ private:
     void showInfoMenu();
     void showTrainDetails(int trainNumber);
     void showStationDetails(const std::string &stationName);
-    void printCurrentTime();
-    void printEventLog();
+    void printCurrentTime() const;
+    void printEventLog() const;
+    void printStatistics() const;
 
     void printTimetable() const;
     void showTrainDetails(int id) const;

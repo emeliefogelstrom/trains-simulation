@@ -45,6 +45,11 @@ void UserInterface::run()
             sim_.step(interval_);
             printEventLog();
             sim_.clearEventLog();
+            if (sim_.isFinished())
+            {
+                printStatistics();
+                running = false;
+            }
             break;
         case 2:
             std::cout << "New interval (minutes): ";
@@ -53,6 +58,12 @@ void UserInterface::run()
         case 3:
             sim_.stepToNextEvent();
             printEventLog();
+            sim_.clearEventLog();
+            if (sim_.isFinished())
+            {
+                printStatistics();
+                running = false;
+            }
             break;
         case 4:
             showInfoMenu();
@@ -275,13 +286,17 @@ void printEvent(const SimEvent &event)
     }
 }
 
-void UserInterface::printEventLog()
+void UserInterface::printEventLog() const
 {
     printCurrentTime();
     for (const auto &event : sim_.getEventLog())
     {
         printEvent(event);
     }
+}
+
+void UserInterface::printStatistics() const
+{
 }
 
 void UserInterface::printTimetable() const
@@ -302,7 +317,7 @@ void UserInterface::printTimetable() const
     }
 }
 
-void UserInterface::printCurrentTime()
+void UserInterface::printCurrentTime() const
 {
     int time = sim_.getCurrentTime();
     std::cout << "Current time: " << time / 60 << ":"
