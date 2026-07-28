@@ -69,5 +69,6 @@ public:
     const Train *getTrainByNumber(int trainNumber) const;
     const Station *getStationByName(const std::string &stationName) const;
     const VehicleLocation findVehicleById(int vehicleId) const;
+    bool isFinished() const;
 };
 #endif

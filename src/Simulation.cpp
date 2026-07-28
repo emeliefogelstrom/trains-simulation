@@ -181,3 +181,25 @@ void Simulation::writeToLog(const SimEvent &event)
              << " -> " << statusToString(event.newStatus) << "\n";
     logFile_.flush();
 }
+
+bool Simulation::isFinished() const
+{
+    if (currentTime_ >= 1440)
+    {
+        for (const auto &train : trains_)
+        {
+            if (train->getStatus() == TrainStatus::RUNNING || train->getStatus() == TrainStatus::ARRIVED)
+                return false;
+        }
+    }
+    else
+    {
+        for (const auto &train : trains_)
+        {
+            if (train->getStatus() != TrainStatus::FINISHED)
+                return false;
+        }
+    }
+
+    return true;
+}
