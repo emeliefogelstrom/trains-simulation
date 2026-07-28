@@ -1,4 +1,5 @@
 // UserInterface.cpp
+
 #include "../include/UserInterface.h"
 #include "../include/Train.h"
 #include "../include/ElectricLocomotive.h"
@@ -7,6 +8,7 @@
 #include "../include/SleepingCarriage.h"
 #include "../include/CoveredFreightCarriage.h"
 #include "../include/OpenFreightCarriage.h"
+#include "../include/SimUtils.h"
 #include <iostream>
 #include <string>
 #include <limits>
@@ -111,7 +113,7 @@ void UserInterface::showInfoMenu()
             std::cout << "Vehicle id: ";
             int vehicleId;
             std::cin >> vehicleId;
-            // sim_.findVehicleById(vehicleId);
+            findVehicleById(vehicleId);
             break;
         }
         case 5:
@@ -192,64 +194,6 @@ void UserInterface::showStationDetails(const std::string &stationName)
     std::cout << "Trains:                    " << (trainsAtStation.empty() ? "none" : trainsAtStation) << "\n";
 }
 
-std::string statusToString(TrainStatus status)
-{
-    switch (status)
-    {
-    case TrainStatus::NOT_ASSEMBLED:
-        return "NOT_ASSEMBLED";
-    case TrainStatus::INCOMPLETE:
-        return "INCOMPLETE";
-    case TrainStatus::ASSEMBLED:
-        return "ASSEMBLED";
-    case TrainStatus::READY:
-        return "READY";
-    case TrainStatus::RUNNING:
-        return "RUNNING";
-    case TrainStatus::ARRIVED:
-        return "ARRIVED";
-    case TrainStatus::FINISHED:
-        return "FINISHED";
-    default:
-        return "UNKNOWN";
-    }
-}
-
-std::string timeToString(int minutes)
-{
-    int hours = minutes / 60;
-    int mins = minutes % 60;
-    std::ostringstream oss;
-    oss << std::setfill('0') << std::setw(2) << hours
-        << ":"
-        << std::setfill('0') << std::setw(2) << mins;
-    return oss.str();
-}
-
-std::string vehicleTypeToString(const VehiclePtr &vehicle)
-{
-    return std::visit([](const auto *v) -> std::string
-                      {
-        if (auto* loco = dynamic_cast<const Locomotive*>(v))
-        {
-            if (loco->getType() == LocomotiveType::Electric)
-                return "Electric locomotive";
-            else
-                return "Diesel locomotive";
-        }
-        else if (auto* car = dynamic_cast<const Carriage*>(v))
-        {
-            switch (car->getType())
-            {
-            case CarriageType::Seat:          return "Seat carriage";
-            case CarriageType::Sleeping:      return "Sleeping carriage";
-            case CarriageType::OpenFreight:   return "Open freight carriage";
-            case CarriageType::CoveredFreight:return "Covered freight carriage";
-            }
-        }
-        return "Unknown"; }, vehicle);
-}
-
 void UserInterface::showTrainDetails(int trainNumber)
 {
     auto train = sim_.getTrainByNumber(trainNumber);
@@ -282,6 +226,25 @@ void UserInterface::showTrainDetails(int trainNumber)
                                    << " Type: " << vehicleTypeToString(vehicle) << "\n"; }, vehicle);
         }
     }
+}
+
+void UserInterface::findVehicleById(int vehicleId) const
+{
+    auto location = sim_.findVehicleById(vehicleId);
+
+    if (!location.found)
+    {
+        std::cout << "Vehicle " << vehicleId << " not found.\n";
+        return;
+    }
+
+    if (location.onTrain)
+        std::cout << "Vehicle " << vehicleId << " is on train "
+                  << location.trainNumber << " ("
+                  << statusToString(location.trainStatus) << ").\n";
+    else
+        std::cout << "Vehicle " << vehicleId << " is at station "
+                  << location.stationName << ".\n";
 }
 
 void printEvent(const SimEvent &event)

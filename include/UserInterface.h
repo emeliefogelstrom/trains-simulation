@@ -18,6 +18,7 @@ private:
     void printTimetable() const;
     void showTrainDetails(int id) const;
     void showStationDetails(int name) const;
+    void findVehicleById(int vehicleId) const;
 
 public:
     UserInterface(const UserInterface &) = delete;
