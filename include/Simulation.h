@@ -3,6 +3,7 @@
 #define SIMULATION_H
 #include <vector>
 #include <memory>
+#include <fstream>
 #include "Station.h"
 #include "Train.h"
 #include "VehicleEscrow.h"
@@ -23,6 +24,15 @@ struct SimEvent
     TrainStatus newStatus;
 };
 
+struct VehicleLocation
+{
+    bool found;
+    bool onTrain;
+    int trainNumber;         // om onTrain
+    std::string stationName; // om inte onTrain
+    TrainStatus trainStatus; // om onTrain
+};
+
 class Simulation
 {
 private:
@@ -33,10 +43,13 @@ private:
     std::vector<Track> tracks_;
     std::vector<SimEvent> eventLog_;
     int currentTime_;
+    std::ofstream logFile_;
 
-    Station *findStation(const std::string &name);
+    Station *
+    findStation(const std::string &name);
     void scheduleEvent(std::unique_ptr<Event> event);
     void initializeEvents();
+    void writeToLog(const SimEvent &event);
 
 public:
     Simulation(const Simulation &) = delete;
@@ -44,6 +57,7 @@ public:
     Simulation(std::vector<std::unique_ptr<Train>> trains,
                std::vector<std::unique_ptr<Station>> stations,
                std::vector<Track> tracks);
+    ~Simulation();
 
     void step(int interval);
     void stepToNextEvent();
@@ -54,5 +68,6 @@ public:
     const std::vector<std::unique_ptr<Train>> &getTrains() const;
     const Train *getTrainByNumber(int trainNumber) const;
     const Station *getStationByName(const std::string &stationName) const;
+    const VehicleLocation findVehicleById(int vehicleId) const;
 };
 #endif

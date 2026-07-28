@@ -2,6 +2,8 @@
 #include <vector>
 #include <queue>
 #include <memory>
+#include <fstream>
+#include "../include/SimUtils.h"
 #include "../include/Simulation.h"
 #include "../include/events/Event.h"
 #include "../include/events/EventQueue.h"
@@ -9,7 +11,13 @@
 
 Simulation::Simulation(std::vector<std::unique_ptr<Train>> trains,
                        std::vector<std::unique_ptr<Station>> stations,
-                       std::vector<Track> tracks) : trains_(std::move(trains)), stations_(std::move(stations)), tracks_(std::move(tracks)), currentTime_(0) { initializeEvents(); }
+                       std::vector<Track> tracks) : trains_(std::move(trains)), stations_(std::move(stations)), tracks_(std::move(tracks)), currentTime_(0)
+{
+    initializeEvents();
+    logFile_.open("Trainsim.log");
+}
+
+Simulation::~Simulation() { logFile_.close(); }
 
 Station *Simulation::findStation(const std::string &name)
 {
@@ -98,6 +106,8 @@ void Simulation::processNextEvent()
         event->getTrain().getDelay(),
         oldStatus,
         newStatus);
+
+    writeToLog(eventLog_.back());
 }
 
 const std::vector<SimEvent> &Simulation::getEventLog() const
@@ -142,4 +152,32 @@ const Station *Simulation::getStationByName(const std::string &stationName) cons
         return it->get();
 
     return nullptr;
+}
+
+const VehicleLocation Simulation::findVehicleById(int vehicleId) const
+{
+    auto stationIt = std::ranges::find_if(stations_, [vehicleId](const auto &station)
+                                          { return station->getLocomotiveById(vehicleId) != nullptr ||
+                                                   station->getCarriageById(vehicleId) != nullptr; });
+
+    if (stationIt != stations_.end())
+        return VehicleLocation{true, false, 0, (*stationIt)->getStationName(), TrainStatus::NOT_ASSEMBLED};
+
+    for (const auto &train : trains_)
+    {
+        auto trainIt = std::ranges::find_if(train->getVehicleSequence(), [vehicleId](const VehiclePtr &vehicle)
+                                            { return std::visit([vehicleId](const auto *ptr)
+                                                                { return ptr->getId() == vehicleId; }, vehicle); });
+        if (trainIt != train->getVehicleSequence().end())
+            return VehicleLocation{true, true, train->getTrainNumber(), "", train->getStatus()};
+    }
+    return VehicleLocation{false, false, 0, "", TrainStatus::NOT_ASSEMBLED};
+}
+
+void Simulation::writeToLog(const SimEvent &event)
+{
+    logFile_ << timeToString(event.time) << " Train " << event.trainNumber
+             << ": " << statusToString(event.oldStatus)
+             << " -> " << statusToString(event.newStatus) << "\n";
+    logFile_.flush();
 }
