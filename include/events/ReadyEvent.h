@@ -9,9 +9,6 @@ public:
     ReadyEvent(Train &train, int time) : Event(train, time) {}
     std::unique_ptr<Event> processEvent() override
     {
-        std::cout
-            << "I ReadyEvent för tåg: " << train_.getTrainNumber() << std::endl;
-
         train_.ready();
         return std::make_unique<DepartEvent>(train_, train_.getScheduledDepartureTime() + train_.getDelay());
     }
