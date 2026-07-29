@@ -118,6 +118,17 @@ double Train::getAverageSpeed() const
 {
     double travelTime = scheduledArrivalTime_ - scheduledDepartureTime_;
     double hours = travelTime / 60.0;
+
+    if (delay_ > 0)
+    {
+        double effectiveTime = scheduledArrivalTime_ - (scheduledDepartureTime_ + delay_);
+        if (effectiveTime <= 0)
+            return maxSpeed_;
+
+        double speed = distance_ / (effectiveTime / 60.0);
+        return std::min(speed, static_cast<double>(maxSpeed_));
+    }
+
     return distance_ / hours;
 }
 
