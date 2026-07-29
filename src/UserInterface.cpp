@@ -297,6 +297,37 @@ void UserInterface::printEventLog() const
 
 void UserInterface::printStatistics() const
 {
+    auto stats = sim_.getTrainStats();
+
+    std::string onTime, delayed, neverDeparted;
+    int totalDelay = 0;
+
+    for (const auto &s : stats)
+    {
+        if (!s.departed)
+            neverDeparted += std::to_string(s.trainNumber) + " ";
+        else if (s.onTime)
+            onTime += std::to_string(s.trainNumber) + " ";
+        else
+            delayed += std::to_string(s.trainNumber) + " ";
+
+        totalDelay += s.departureDelay;
+    }
+
+    std::cout << "\n=== SIMULATION STATISTICS ===\n"
+              << "Trains that arrived on time: " << (onTime.empty() ? "none" : onTime) << "\n"
+              << "Trains that never departed: " << (neverDeparted.empty() ? "none" : neverDeparted) << "\n"
+              << "Trains that were delayed: " << (delayed.empty() ? "none" : delayed) << "\n\n";
+
+    for (const auto &s : stats)
+    {
+        if (s.departed && !s.onTime)
+            std::cout << "Train " << s.trainNumber
+                      << " departed " << s.departureDelay << " min late"
+                      << ", arrived " << s.arrivalDelay << " min late\n";
+    }
+
+    std::cout << "\nTotal delay: " << totalDelay << " minutes\n";
 }
 
 void UserInterface::printTimetable() const
