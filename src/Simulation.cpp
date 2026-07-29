@@ -77,6 +77,13 @@ void Simulation::stepToNextEvent()
 void Simulation::processNextEvent()
 {
     auto event = queue_.pop();
+
+    // Discard events after midnight for non-running trains
+    if (currentTime_ >= 1440 &&
+        event->getTrain().getStatus() != TrainStatus::RUNNING &&
+        event->getTrain().getStatus() != TrainStatus::ARRIVED)
+        return;
+
     TrainStatus oldStatus = event->getTrain().getStatus();
     auto next = event->processEvent();
     TrainStatus newStatus = event->getTrain().getStatus();
@@ -90,6 +97,14 @@ void Simulation::processNextEvent()
             event->getTime() + 20,
             *arrStation,
             vehicleEscrow_)));
+    }
+    else if (newStatus == TrainStatus::FINISHED)
+    {
+        statistics_.emplace_back(event->getTrain().getTrainNumber(),
+                                 true,
+                                 event->getTrain().getDelay() == 0 ? true : false,
+                                 event->getTrain().getDelay(),
+                                 event->getTrain().getDelay());
     }
     else if (next != nullptr)
     {
@@ -113,6 +128,11 @@ void Simulation::processNextEvent()
 const std::vector<SimEvent> &Simulation::getEventLog() const
 {
     return eventLog_;
+}
+
+const std::vector<TrainStats> &Simulation::getTrainStats() const
+{
+    return statistics_;
 }
 
 void Simulation::clearEventLog()
@@ -182,10 +202,25 @@ void Simulation::writeToLog(const SimEvent &event)
     logFile_.flush();
 }
 
-bool Simulation::isFinished() const
+bool Simulation::isFinished()
 {
     if (currentTime_ >= 1440)
     {
+        if (!statisticsFinalized_)
+        {
+            statisticsFinalized_ = true;
+            for (const auto &train : trains_)
+            {
+                if (train->getStatus() == TrainStatus::INCOMPLETE || train->getStatus() == TrainStatus::NOT_ASSEMBLED)
+                {
+                    statistics_.emplace_back(train->getTrainNumber(),
+                                             false,
+                                             false,
+                                             train->getDelay(),
+                                             train->getDelay());
+                }
+            }
+        }
         for (const auto &train : trains_)
         {
             if (train->getStatus() == TrainStatus::RUNNING || train->getStatus() == TrainStatus::ARRIVED)
