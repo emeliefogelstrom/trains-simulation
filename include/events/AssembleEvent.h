@@ -16,9 +16,17 @@ public:
 
     std::unique_ptr<Event> processEvent() override
     {
+
+        if (time_ >= 1440)
+        {
+            return nullptr;
+        }
+
         if (train_.tryAssemble(station_, vehicleEscrow_))
         {
-            return std::make_unique<ReadyEvent>(train_, train_.getScheduledDepartureTime() - 10);
+            return std::make_unique<ReadyEvent>(
+                train_,
+                train_.getScheduledDepartureTime() - 10);
         }
 
         train_.addDelay(10);
