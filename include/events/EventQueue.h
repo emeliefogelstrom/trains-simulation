@@ -41,6 +41,23 @@ public:
     }
     bool empty() const { return queue_.empty(); }
     int topTime() const { return queue_.top()->getTime(); }
+    void removeIfInactive()
+    {
+        std::vector<std::unique_ptr<Event>> keep;
+        while (!queue_.empty())
+        {
+            auto event = std::move(const_cast<std::unique_ptr<Event> &>(queue_.top()));
+            queue_.pop();
+            TrainStatus s = event->getTrain().getStatus();
+            if (s == TrainStatus::RUNNING ||
+                s == TrainStatus::ARRIVED)
+            {
+                keep.push_back(std::move(event));
+            }
+        }
+        for (auto &e : keep)
+            queue_.push(std::move(e));
+    }
 };
 
 #endif
