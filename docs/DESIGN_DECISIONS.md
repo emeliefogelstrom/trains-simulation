@@ -5,6 +5,18 @@ made during the development of the Trains Simulation project.
 
 ---
 
+## Why event-driven simulation?
+
+A minute-by-minute simulation would repeatedly inspect every train even
+when nothing changes. A discrete event simulation instead jumps directly
+to the next state transition, making the orchestration simpler and
+scaling better as the number of trains grows. With 130 trains and ~7
+events per train, the event queue contains a manageable and predictable
+number of entries — and the simulation only does work when something
+actually happens.
+
+---
+
 ## 1. No shared Vehicle base class — `std::variant` instead
 
 **Decision:** `Locomotive` and `Carriage` are two independent class
@@ -20,8 +32,10 @@ using Vehicle    = std::variant<std::unique_ptr<Locomotive>,
 **Why:** The spec states that `maxSpeed` is a locomotive-only attribute.
 A shared base class would either force `maxSpeed` onto `Carriage` (wrong)
 or require `dynamic_cast` everywhere (fragile). `std::variant` enforces
-the closed set of exactly two types at compile time, makes the type
-system honest, and avoids virtual dispatch overhead for a fixed type set.
+a closed set of exactly two types at compile time and enables
+compile-time exhaustiveness checking — the compiler rejects a `std::visit`
+that fails to handle one of the alternatives. The type system itself
+prevents entire categories of bugs.
 
 ---
 
@@ -35,7 +49,8 @@ they are returned to the arrival station's pool at FINISHED.
 either a `Station`'s pool, or `VehicleEscrow`. This makes ownership
 explicit and auditable. It also satisfies grading requirement e) —
 "find a vehicle by id" — since `VehicleEscrow` is the single place to
-query for in-transit vehicles.
+query for in-transit vehicles. This mirrors physical ownership: while a
+train is running, the vehicles are no longer located at either station.
 
 `Train` holds only non-owning `const` raw pointers into `VehicleEscrow`
 (via `vehicleSequence_`) to remember which vehicles belong to it and in
@@ -55,7 +70,8 @@ succeeded completely.
 **Why:** A partial commit would leave the station pool in an inconsistent
 state and risk one train "stealing" a vehicle another train had already
 claimed. The two-phase approach guarantees that a failed assembly attempt
-leaves the pool completely untouched.
+leaves the pool completely untouched — essentially a small transaction
+with verify-then-commit semantics.
 
 A `claimedIds` vector tracks which ids have been virtually allocated
 within the current attempt, preventing two slots of the same type from
@@ -74,6 +90,12 @@ which is correct but visually alarming. By isolating the `const_cast`
 inside `EventQueue::pop()` with an explanatory comment, no other code
 needs to know about this STL limitation. The rest of the codebase sees
 only a clean, intent-revealing API.
+
+`std::multiset` with `extract()` was considered as an alternative —
+it avoids `const_cast` entirely. However, `priority_queue` better
+communicates the intent of the data structure. The STL limitation is
+therefore encapsulated in `EventQueue` rather than worked around by
+choosing a less expressive container.
 
 ```cpp
 std::unique_ptr<Event> EventQueue::pop()
@@ -101,14 +123,12 @@ to the orchestration layer. The return-based design means each event
 class only knows about its own `Train` and any resources it directly
 needs (`Station&`, `VehicleEscrow&`). `Simulation` drives the queue
 without events needing to know the queue exists. This also makes events
-trivially unit-testable in isolation: construct a `Train`, construct an
-event, call `processEvent()`, check the returned event type and the
-train's new status — no simulation machinery required.
+trivially unit-testable in isolation.
 
-The one exception is `ArriveEvent`, which returns `nullptr`.
-`FinishEvent` needs a `Station&` and `VehicleEscrow&` that only
-`Simulation` can provide, so `Simulation` creates `FinishEvent` directly
-when it observes a `nullptr` return from an `ARRIVED` train.
+The one exception is `ArriveEvent`, which returns `nullptr`. Returning
+`nullptr` explicitly signals that orchestration is required rather than
+another event generated locally. `Simulation` creates `FinishEvent`
+directly when it observes this signal from an `ARRIVED` train.
 
 ---
 
@@ -140,24 +160,7 @@ without it the linker would report multiple-definition errors.
 
 ---
 
-## 8. Postgres as a write-only history sink
-
-**Decision:** The three data files (`TrainMap.txt`, `TrainStations.txt`,
-`Trains.txt`) feed the in-memory C++ objects directly, as the spec
-requires. PostgreSQL is a write-only append log — fed after each state
-transition — not a source of truth for the running simulation.
-
-**Why:** The spec explicitly requires file-based startup. Replacing file
-parsing with database reads would violate a stated requirement. The
-Postgres layer instead demonstrates database integration without
-compromising spec compliance: it captures a persistent, queryable
-history of every state transition, satisfying grading requirement f)
-(vehicle movement history) and providing a backend for a future
-React dashboard.
-
----
-
-## 9. Include guards over `#pragma once`
+## 8. Include guards over `#pragma once`
 
 **Decision:** All headers use `#ifndef` / `#define` / `#endif` include
 guards rather than `#pragma once`.
@@ -169,7 +172,7 @@ standard and is therefore disallowed. Guard names follow the convention
 
 ---
 
-## 10. SimUtils — shared presentation helpers
+## 9. SimUtils — shared presentation helpers
 
 **Decision:** `timeToString`, `statusToString`, `vehicleTypeToString`
 and `timeFromString` live in `SimUtils.h` as `inline` free functions,
