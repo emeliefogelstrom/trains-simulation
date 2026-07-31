@@ -17,12 +17,44 @@
 
 void UserInterface::run()
 {
-    printCurrentTime();
+    // Setup menu before simulation starts
+    std::cout << "\n=== SIMULATION SETTINGS ===\n"
+              << "Start time: " << timeToString(sim_.getStartTime()) << "\n"
+              << "End time:   " << timeToString(sim_.getEndTime()) << "\n\n"
+              << "1. Change start time\n"
+              << "2. Change end time\n"
+              << "3. Start simulation\n"
+              << "Choice: ";
+
+    int setupChoice;
+    while (std::cin >> setupChoice && setupChoice != 3)
+    {
+        if (setupChoice == 1)
+        {
+            std::cout << "New start time (hh:mm): ";
+            std::string time;
+            std::cin >> time;
+            sim_.setStartTime(timeFromString(time));
+        }
+        else if (setupChoice == 2)
+        {
+            std::cout << "New end time (hh:mm): ";
+            std::string time;
+            std::cin >> time;
+            sim_.setEndTime(timeFromString(time));
+        }
+
+        std::cout << "\nStart time: " << timeToString(sim_.getStartTime()) << "\n"
+                  << "End time:   " << timeToString(sim_.getEndTime()) << "\n\n"
+                  << "1. Change start time\n"
+                  << "2. Change end time\n"
+                  << "3. Start simulation\n"
+                  << "Choice: ";
+    }
 
     bool running = true;
     while (running)
     {
-
         std::cout << "\n=== MAIN MENU ===\n"
                   << "1. Step forward " << interval_ << " minutes\n"
                   << "2. Change interval\n"
@@ -43,6 +75,7 @@ void UserInterface::run()
         {
         case 1:
             sim_.step(interval_);
+            printCurrentTime();
             printEventLog();
             sim_.clearEventLog();
             if (sim_.isFinished())
@@ -57,6 +90,7 @@ void UserInterface::run()
             break;
         case 3:
             sim_.stepToNextEvent();
+            printCurrentTime();
             printEventLog();
             sim_.clearEventLog();
             if (sim_.isFinished())
@@ -266,7 +300,10 @@ void printEvent(const SimEvent &event)
         std::cout << "Train " << event.trainNumber << " has not yet been assembled. \n";
         break;
     case TrainStatus::ASSEMBLED:
-        std::cout << "Train " << event.trainNumber << " assembled at station " << event.departureStation << " with scheduled departure time at " << timeToString(event.time) << ". \n";
+        std::cout << "Train " << event.trainNumber
+                  << " assembled at station " << event.departureStation
+                  << " with scheduled departure time at "
+                  << timeToString(event.scheduledDepartureTime) << ". \n";
         break;
     case TrainStatus::READY:
         std::cout << "Train " << event.trainNumber << " is ready for departure at station " << event.departureStation << " at " << timeToString(event.time + event.delay) << ". \n";
@@ -284,7 +321,7 @@ void printEvent(const SimEvent &event)
         std::cout << "Train " << event.trainNumber << " has been disassembled at station. \n";
         break;
     case TrainStatus::INCOMPLETE:
-        if (event.time + 10 < 1440)
+        if (event.time + 10 < event.endTime)
             std::cout << "Unable to assemble train " << event.trainNumber
                       << ". New attempt has been scheduled to "
                       << timeToString(event.time + 10) << ". \n";

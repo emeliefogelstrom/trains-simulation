@@ -7,8 +7,6 @@ class UserInterface
 private:
     Simulation &sim_;
     int interval_ = 10;
-
-    void showMainMenu();
     void showInfoMenu();
     void showTrainDetails(int trainNumber);
     void showStationDetails(const std::string &stationName);
