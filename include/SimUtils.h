@@ -73,4 +73,11 @@ inline std::string vehicleTypeToString(const VehiclePtr &vehicle)
         return "Unknown"; }, vehicle);
 }
 
+inline int timeFromString(const std::string &time)
+{
+    int hours = std::stoi(time.substr(0, 2));
+    int minutes = std::stoi(time.substr(3, 2));
+    return hours * 60 + minutes;
+}
+
 #endif
