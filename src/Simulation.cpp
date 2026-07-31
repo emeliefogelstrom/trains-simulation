@@ -60,6 +60,14 @@ void Simulation::step(int interval)
     while (!queue_.empty() && queue_.topTime() <= targetTime)
     {
         currentTime_ = queue_.topTime();
+
+        if (currentTime_ >= 1440)
+        {
+            queue_.removeIfInactive();
+            if (queue_.empty() || queue_.topTime() > targetTime)
+                break;
+        }
+
         processNextEvent();
     }
     currentTime_ = targetTime;
@@ -78,15 +86,11 @@ void Simulation::processNextEvent()
 {
     auto event = queue_.pop();
 
-    // Discard events after midnight for non-running trains
-    if (currentTime_ >= 1440 &&
-        event->getTrain().getStatus() != TrainStatus::RUNNING &&
-        event->getTrain().getStatus() != TrainStatus::ARRIVED)
-        return;
-
     TrainStatus oldStatus = event->getTrain().getStatus();
+
     auto next = event->processEvent();
     TrainStatus newStatus = event->getTrain().getStatus();
+
     if (next == nullptr && newStatus == TrainStatus::ARRIVED)
     {
         Station *arrStation = findStation(event->getTrain().getArrivalStation());
@@ -104,7 +108,7 @@ void Simulation::processNextEvent()
                                  true,
                                  event->getTrain().getDelay() == 0 ? true : false,
                                  event->getTrain().getDelay(),
-                                 event->getTrain().getDelay());
+                                 event->getTrain().getActualArrivalTime() - event->getTrain().getScheduledArrivalTime());
     }
     else if (next != nullptr)
     {
@@ -118,6 +122,7 @@ void Simulation::processNextEvent()
         event->getTrain().getArrivalStation(),
         event->getTrain().getScheduledDepartureTime(),
         event->getTrain().getScheduledArrivalTime(),
+        event->getTrain().getActualArrivalTime(),
         event->getTrain().getDelay(),
         oldStatus,
         newStatus);
@@ -217,7 +222,7 @@ bool Simulation::isFinished()
                                              false,
                                              false,
                                              train->getDelay(),
-                                             train->getDelay());
+                                             train->getActualArrivalTime() - train->getScheduledArrivalTime());
                 }
             }
         }

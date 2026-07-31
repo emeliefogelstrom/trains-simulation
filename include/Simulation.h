@@ -19,6 +19,7 @@ struct SimEvent
     std::string arrivalStation;
     int scheduledDepartureTime;
     int scheduledArrivalTime;
+    int actualArrivalTime;
     int delay;
     TrainStatus oldStatus;
     TrainStatus newStatus;
