@@ -1,22 +1,23 @@
 # Trains Simulation
 
-Real-time train simulation engine built in modern C++20 with WebSocket 
-streaming and React dashboard.
+Discrete event-driven train simulation engine built in modern C++23.
+A reimplementation of the DT060G university assignment (originally 
+completed 2019), rebuilt from scratch to demonstrate professional-level 
+C++ practices.
 
 ## Tech Stack
-- C++20 — simulation engine
-- Boost.Asio — WebSocket server
-- PostgreSQL — persistent data
-- React — real-time dashboard
+- C++23 — simulation engine
+- GoogleTest — unit testing
+- CMake 3.20+
 
 ## Features
-- Train traffic simulation in real time
-- Electric and diesel locomotives, holding unique characteristics
-- Multiple carriages including passenger carriage, sleeping carriage and freigt carriage
-- Real time updates via WebSocket to React dashboard
-- Departure and arrival shedule simulation
-- Data driven. Reads trains, stations and map data from files
-
+- Discrete event-driven simulation of a full day of train traffic
+- Configurable start and end time
+- Electric and diesel locomotives with unique characteristics
+- Passenger, sleeping and freight carriages
+- Vehicle pool management with ownership transfer between stations
+- Departure and arrival schedule simulation with delay tracking
+- Data-driven: reads trains, stations and map data from files
 
 ## Building
 ```bash
@@ -28,3 +29,12 @@ cmake .. && make
 ```bash
 ./trains
 ```
+
+## Testing
+```bash
+cd build && ctest
+```
+
+## Design
+See [DESIGN_DECISIONS.md](docs/DESIGN_DECISIONS.md) for architecture 
+and key design decisions.
