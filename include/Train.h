@@ -30,6 +30,7 @@ private:
 
     int scheduledDepartureTime_;
     int scheduledArrivalTime_;
+    int actualArrivalTime_;
     int maxSpeed_;
     int distance_;
     int delay_;
@@ -45,6 +46,8 @@ public:
     void arrive();
     void finish(Station &arrival, VehicleEscrow &box);
 
+    void setActualArrivalTime(int arrivalTime);
+
     int getTrainNumber() const;
     const std::string &getDepartureStation() const;
     const std::string &getArrivalStation() const;
@@ -54,11 +57,13 @@ public:
     const std::vector<int> &getRequiredVehicleTypes() const;
 
     int getMaxSpeed() const;
+    int getDistance() const;
     int getScheduledDepartureTime() const;
     int getScheduledArrivalTime() const;
     double getAverageSpeed() const;
     void addDelay(int delay);
     int getDelay() const;
+    int getActualArrivalTime() const;
 };
 
 #endif

@@ -11,7 +11,7 @@ Train::Train(int trainNumber, const std::string &departureStation,
              const std::vector<int> &requiredVehicleTypes) : trainNumber_(trainNumber), departureStation_(departureStation),
                                                              arrivalStation_(arrivalStation), scheduledDepartureTime_(scheduledDepartureTime),
                                                              scheduledArrivalTime_(scheduledArrivalTime), maxSpeed_(maxSpeed), distance_(distance),
-                                                             requiredVehicleTypes_(requiredVehicleTypes), status_(TrainStatus::NOT_ASSEMBLED), delay_(0) {}
+                                                             requiredVehicleTypes_(requiredVehicleTypes), status_(TrainStatus::NOT_ASSEMBLED), delay_(0), actualArrivalTime_(0) {}
 
 bool Train::tryAssemble(Station &departure, VehicleEscrow &box)
 {
@@ -98,9 +98,13 @@ void Train::finish(Station &arrival, VehicleEscrow &box)
     status_ = TrainStatus::FINISHED;
 }
 
+void Train::setActualArrivalTime(int arrivalTime) { actualArrivalTime_ = arrivalTime; }
+
 int Train::getTrainNumber() const { return trainNumber_; }
 
 int Train::getMaxSpeed() const { return maxSpeed_; }
+
+int Train::getDistance() const { return distance_; }
 
 int Train::getScheduledDepartureTime() const { return scheduledDepartureTime_; }
 
@@ -111,7 +115,9 @@ const std::string &Train::getDepartureStation() const { return departureStation_
 const std::string &Train::getArrivalStation() const { return arrivalStation_; }
 
 TrainStatus Train::getStatus() const { return status_; }
+
 const std::vector<VehiclePtr> &Train::getVehicleSequence() const { return vehicleSequence_; }
+
 const std::vector<int> &Train::getRequiredVehicleTypes() const { return requiredVehicleTypes_; }
 
 double Train::getAverageSpeed() const
@@ -135,3 +141,5 @@ double Train::getAverageSpeed() const
 void Train::addDelay(int delay) { delay_ += delay; }
 
 int Train::getDelay() const { return delay_; }
+
+int Train::getActualArrivalTime() const { return actualArrivalTime_; }
