@@ -13,10 +13,6 @@ public:
 
         int arrivalTime = train_.getScheduledArrivalTime();
 
-        // 121 91 94 127 32
-        if (train_.getTrainNumber() == 32)
-            std::cout << "Train " << train_.getTrainNumber() << " is delayed " << train_.getDelay() << " minutes " << " and new departureTime is " << train_.getScheduledDepartureTime() + train_.getDelay() << "\n";
-
         if (train_.getDelay() > 0)
         {
             double timeAtMaxSpeed = static_cast<double>(train_.getDistance()) / train_.getMaxSpeed() * 60;
