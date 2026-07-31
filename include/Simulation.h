@@ -21,6 +21,7 @@ struct SimEvent
     int scheduledArrivalTime;
     int actualArrivalTime;
     int delay;
+    int endTime;
     TrainStatus oldStatus;
     TrainStatus newStatus;
 };
@@ -53,6 +54,8 @@ private:
     std::vector<Track> tracks_;
     std::vector<SimEvent> eventLog_;
     std::vector<TrainStats> statistics_;
+    int startTime_;
+    int endTime_;
     int currentTime_;
     std::ofstream logFile_;
     bool statisticsFinalized_ = false;
@@ -82,6 +85,10 @@ public:
     const Train *getTrainByNumber(int trainNumber) const;
     const Station *getStationByName(const std::string &stationName) const;
     const VehicleLocation findVehicleById(int vehicleId) const;
+    void setStartTime(int startTime);
+    void setEndTime(int endTime);
+    int getStartTime();
+    int getEndTime();
     bool isFinished();
 };
 #endif

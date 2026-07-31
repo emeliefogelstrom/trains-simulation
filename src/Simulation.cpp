@@ -11,7 +11,13 @@
 
 Simulation::Simulation(std::vector<std::unique_ptr<Train>> trains,
                        std::vector<std::unique_ptr<Station>> stations,
-                       std::vector<Track> tracks) : trains_(std::move(trains)), stations_(std::move(stations)), tracks_(std::move(tracks)), currentTime_(0)
+                       std::vector<Track> tracks) : trains_(std::move(trains)),
+                                                    stations_(std::move(stations)),
+                                                    tracks_(std::move(tracks)),
+                                                    startTime_(0),
+                                                    endTime_(1440),
+                                                    currentTime_(startTime_),
+                                                    statisticsFinalized_(false)
 {
     initializeEvents();
     logFile_.open("Trainsim.log");
@@ -50,7 +56,8 @@ void Simulation::initializeEvents()
                 *train,
                 train->getScheduledDepartureTime() - 30,
                 *depStation,
-                vehicleEscrow_));
+                vehicleEscrow_,
+                endTime_));
     }
 }
 
@@ -61,7 +68,13 @@ void Simulation::step(int interval)
     {
         currentTime_ = queue_.topTime();
 
-        if (currentTime_ >= 1440)
+        if (currentTime_ < startTime_)
+        {
+            queue_.pop();
+            continue;
+        }
+
+        if (currentTime_ >= endTime_)
         {
             queue_.removeIfInactive();
             if (queue_.empty() || queue_.topTime() > targetTime)
@@ -124,6 +137,7 @@ void Simulation::processNextEvent()
         event->getTrain().getScheduledArrivalTime(),
         event->getTrain().getActualArrivalTime(),
         event->getTrain().getDelay(),
+        endTime_,
         oldStatus,
         newStatus);
 
@@ -207,22 +221,34 @@ void Simulation::writeToLog(const SimEvent &event)
     logFile_.flush();
 }
 
+void Simulation::setStartTime(int startTime)
+{
+    startTime_ = startTime;
+    currentTime_ = startTime_;
+}
+
+void Simulation::setEndTime(int endTime) { endTime_ = endTime; }
+
+int Simulation::getStartTime() { return startTime_; }
+
+int Simulation::getEndTime() { return endTime_; }
+
 bool Simulation::isFinished()
 {
-    if (currentTime_ >= 1440)
+    if (currentTime_ >= endTime_)
     {
         if (!statisticsFinalized_)
         {
             statisticsFinalized_ = true;
             for (const auto &train : trains_)
             {
-                if (train->getStatus() == TrainStatus::INCOMPLETE || train->getStatus() == TrainStatus::NOT_ASSEMBLED)
+                if (train->getStatus() == TrainStatus::INCOMPLETE ||
+                    train->getStatus() == TrainStatus::NOT_ASSEMBLED ||
+                    train->getStatus() == TrainStatus::ASSEMBLED ||
+                    train->getStatus() == TrainStatus::READY)
                 {
-                    statistics_.emplace_back(train->getTrainNumber(),
-                                             false,
-                                             false,
-                                             train->getDelay(),
-                                             train->getActualArrivalTime() - train->getScheduledArrivalTime());
+                    statistics_.emplace_back(train->getTrainNumber(), false, false,
+                                             train->getDelay(), train->getDelay());
                 }
             }
         }
