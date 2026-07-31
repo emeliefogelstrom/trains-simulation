@@ -266,22 +266,31 @@ void printEvent(const SimEvent &event)
         std::cout << "Train " << event.trainNumber << " has not yet been assembled. \n";
         break;
     case TrainStatus::ASSEMBLED:
-        std::cout << "Train " << event.trainNumber << " assembled at station " << event.departureStation << " with sheduled departure time at " << timeToString(event.scheduledDepartureTime) << ". \n";
+        std::cout << "Train " << event.trainNumber << " assembled at station " << event.departureStation << " with scheduled departure time at " << timeToString(event.time) << ". \n";
         break;
     case TrainStatus::READY:
-        std::cout << "Train " << event.trainNumber << " is ready for departure at station " << event.departureStation << " at " << timeToString(event.scheduledDepartureTime) << ". \n";
+        std::cout << "Train " << event.trainNumber << " is ready for departure at station " << event.departureStation << " at " << timeToString(event.time + event.delay) << ". \n";
         break;
     case TrainStatus::RUNNING:
-        std::cout << "Train " << event.trainNumber << " has left station " << event.departureStation << " at " << timeToString(event.scheduledDepartureTime) << " and are heading for it's final destination, with scheduled arrival time at " << timeToString(event.scheduledArrivalTime) << ".\n ";
+        std::cout << "Train " << event.trainNumber << " has left station " << event.departureStation << " at " << timeToString(event.scheduledDepartureTime + event.delay) << " and are heading for it's final destination, with scheduled arrival time at " << timeToString(event.actualArrivalTime) << ".\n";
         break;
     case TrainStatus::ARRIVED:
-        std::cout << "Train " << event.trainNumber << " has arrived at it's final station " << event.arrivalStation << " at " << timeToString(event.scheduledArrivalTime) << ". \n";
+        std::cout << "Train " << event.trainNumber
+                  << " has arrived at it's final station "
+                  << event.arrivalStation << " at "
+                  << timeToString(event.actualArrivalTime) << ". \n";
         break;
     case TrainStatus::FINISHED:
         std::cout << "Train " << event.trainNumber << " has been disassembled at station. \n";
         break;
     case TrainStatus::INCOMPLETE:
-        std::cout << "Unable to assemble train " << event.trainNumber << ". New attempt has been scheduled to " << timeToString(event.scheduledDepartureTime + event.delay) << ". \n";
+        if (event.time + 10 < 1440)
+            std::cout << "Unable to assemble train " << event.trainNumber
+                      << ". New attempt has been scheduled to "
+                      << timeToString(event.time + 10) << ". \n";
+        else
+            std::cout << "Unable to assemble train " << event.trainNumber
+                      << ". No further attempts will be made.\n";
         break;
     }
 }
@@ -300,7 +309,8 @@ void UserInterface::printStatistics() const
     auto stats = sim_.getTrainStats();
 
     std::string onTime, delayed, neverDeparted;
-    int totalDelay = 0;
+    int totalDepartureDelay = 0;
+    int totalArrivalDelay = 0;
 
     for (const auto &s : stats)
     {
@@ -309,9 +319,11 @@ void UserInterface::printStatistics() const
         else if (s.onTime)
             onTime += std::to_string(s.trainNumber) + " ";
         else
+        {
             delayed += std::to_string(s.trainNumber) + " ";
-
-        totalDelay += s.departureDelay;
+            totalDepartureDelay += s.departureDelay;
+            totalArrivalDelay += s.arrivalDelay;
+        }
     }
 
     std::cout << "\n=== SIMULATION STATISTICS ===\n"
@@ -327,7 +339,8 @@ void UserInterface::printStatistics() const
                       << ", arrived " << s.arrivalDelay << " min late\n";
     }
 
-    std::cout << "\nTotal delay: " << totalDelay << " minutes\n";
+    std::cout << "\nTotal departure delay: " << totalDepartureDelay << " minutes\n";
+    std::cout << "Total arrival delay:   " << totalArrivalDelay << " minutes\n";
 }
 
 void UserInterface::printTimetable() const
